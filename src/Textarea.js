@@ -1,5 +1,22 @@
 import { useState } from "react";
-import Markdown from "marked-react";
+import Marked from "./Marked";
+import purify from "dompurify";
+
+const Parsed = (props) => {
+  const string = props.string;
+  return (
+    <div>
+      <script type="text/javascript" src="src/purify.js"></script>
+      <div
+        id="preview"
+        dangerouslySetInnerHTML={{
+          __html: purify.sanitize(string, { sanitize: true }),
+        }}
+      />
+      `
+    </div>
+  );
+};
 
 const Textarea = () => {
   const markdownPreview = `
@@ -40,12 +57,12 @@ This is an image of meeeeeee:
 This is **bolded text**
 `;
   const [textBox, setTextBox] = useState(markdownPreview);
+
   const updateTextbox = (e) => {
     const userText = e.target.value;
     // Add formatting for a space between # and characters
-    const carriageFormatted = userText.replace(/[\n\r]/g, "  \n");
-    console.log(carriageFormatted);
-    setTextBox(carriageFormatted);
+    // const carriageFormatted = userText.replace(/[\n\n]/g, "  \n");
+    setTextBox(userText);
   };
 
   return (
@@ -53,11 +70,9 @@ This is **bolded text**
       <textarea
         id="editor"
         onChange={(e) => updateTextbox(e)}
-        placeholder={markdownPreview}
+        value={textBox}
       />
-      <div id="preview">
-        <Markdown>{textBox}</Markdown>
-      </div>
+      <Parsed string={Marked(textBox)} />
     </div>
   );
 };
